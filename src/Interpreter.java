@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.EmptyStackException;
+import java.util.Scanner;
 import java.util.Stack;
 
 
@@ -25,7 +28,6 @@ public class Interpreter {
 	}
 	
 	void parse(String filename) {
-		int[] size = null;
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(filename));
@@ -40,26 +42,162 @@ public class Interpreter {
 		}
 	}
 	
+	
 	void run() {
 		char instr;
 		while((instr = program.getInstruction(programCounter)) != '@') {
+			//System.out.print(instr);
 			execute(instr);
 			programCounter.move(currentDirection);
 		}
 	}
 	
-	void execute(char instruction) {
-		switch (instruction) {
-		case '<': currentDirection = Dir.WEST; break;
-		case '>': currentDirection = Dir.EAST; break;
-		case '^': currentDirection = Dir.NORTH; break;
-		case 'v': currentDirection = Dir.SOUTH; break;
-		case '"': quote = !quote; break;
-		default:
-			if (quote) {
-				System.out.print(instruction);
-			}
-		}
+	
+	private void push(int v) {
+		stack.push(v);
 	}
 	
+	private int peek() {
+		int result;
+		try {
+			result = stack.peek();
+		} catch (EmptyStackException e) {
+			result = 0;
+		}
+		return result;
+	}
+	
+	private int pop() {
+		int result;
+		try {
+			result = stack.pop();
+		} catch (EmptyStackException e) {
+			result = 0;
+		}
+		return result;
+	}
+	
+  public static int mod(int a, int n) {
+    return ((a % n) + n ) % n;
+  }
+	
+	void execute(char inst) {
+		int num;
+		try {
+			num = Integer.parseInt("" + inst);
+		} catch (NumberFormatException nfe) {
+			num = -1;
+		}
+		//string mode
+		if (inst == '"') {
+			quote = !quote;
+		} else if (quote) {
+			push((int)inst);
+		
+		//numbers and arithmetic
+		} else if (num >= 0) { //0-9
+	  	push(num);
+	  } else if (inst == '+') {
+	  	int a = pop();
+	  	int b = pop();
+	  	push(a + b);
+	  } else if (inst == '-') {
+	  	int a = pop();
+	  	int b = pop();
+	  	push(b - a);
+	  } else if (inst == '*') {
+	  	int a = pop();
+	  	int b = pop();
+	  	push(a * b);
+	  } else if (inst == '/') {
+	  	int a = pop();
+	  	int b = pop();
+	  	push(b / a);
+	  } else if (inst == '%') {
+	  	int a = pop();
+	  	int b = pop();
+	  	push(mod(b, a));
+	  } else if (inst == '!') {
+	  	int a = pop();
+	  	if (a == 0) {
+	  		push(1);
+	  	} else {
+	  		push(0);
+	  	}
+	  } else if (inst == '`') {
+	  	int a = pop();
+	  	int b = pop();
+	  	if(b > a) {
+	  		push(1);
+	  	} else {
+	  		push(0);
+	  	}
+	  	
+	  //control flow
+	  } else if (inst == '<') {
+			currentDirection = Dir.WEST;
+		} else if (inst == '>') {
+			currentDirection = Dir.EAST;
+		} else if (inst == '^') {
+			currentDirection = Dir.NORTH;
+		} else if (inst == 'v') {
+			currentDirection = Dir.SOUTH;
+		} else if (inst == '?') {
+			currentDirection = Dir.random();
+		} else if (inst == '_') {
+			int a = pop();
+			if (a == 0) {
+				currentDirection = Dir.EAST;
+			} else {
+				currentDirection = Dir.WEST;
+			}
+		} else if (inst == '|') {
+			int a = pop();
+			if (a == 0) {
+				currentDirection = Dir.SOUTH;
+			} else {
+				currentDirection = Dir.NORTH;
+			}
+		} else if (inst == '#') {
+			programCounter.move(currentDirection);
+			
+		//stack operations
+		} else if (inst == ':') {
+			push(peek());
+		} else if (inst == '\\') {
+			int a = pop();
+			int b = pop();
+			push(a);
+			push(b);
+		} else if (inst == '$') {
+			pop();
+			
+		//input output
+		} else if (inst == '.') {
+			System.out.print(pop());
+		} else if (inst == ',') {
+			System.out.print((char)pop());
+		} else if (inst == '&') {
+			Scanner console = new Scanner(System.in);
+			System.out.print("& ");
+			push(console.nextInt());
+		} else if (inst == '~') {
+			Console console = System.console();
+			System.out.print("~ ");
+			push((int)console.readLine().charAt(0));
+			
+		//put and get
+		} else if (inst == 'p') {
+			//TODO
+		} else if (inst == 'g') {
+			//TODO
+			
+		//white space or invalid
+		} else if (inst == ' ') {
+			//do nothing
+		} else {
+			System.err.print("invalid character");
+			System.exit(1);
+		}
+	}
 }

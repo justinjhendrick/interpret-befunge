@@ -1,9 +1,8 @@
-"hello"v
-       "
-       w
-       o
-       r
-       l
-       d
-       "
-       @
+v this is a comment.
+v this program prints "hello world\n"
+>                 v
+v:"Hello World"*25<
+ >:v
+ ,
+>| <
+ @
