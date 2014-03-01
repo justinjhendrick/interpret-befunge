@@ -23,6 +23,7 @@ public class Interpreter {
 		stack = new Stack<Integer>();
 		currentDirection = Dir.EAST;
 		parse(filename); //parse initializes program
+		program.finalize(); //parsing is done. execution begins.
 		programCounter = new PC(0, 0);
 		quote = false;
 	}
@@ -187,16 +188,23 @@ public class Interpreter {
 			push((int)console.readLine().charAt(0));
 			
 		//put and get
+		//file locations are 1 indexed
+		//but array is 0 indexed
 		} else if (inst == 'p') {
-			//TODO
+			int y = pop() - 1;
+			int x = pop() - 1;
+			int v = pop();
+			program.put(x, y, (char)v);
 		} else if (inst == 'g') {
-			//TODO
+			int y = pop() - 1;
+			int x = pop() - 1;
+			push((int)program.get(x, y));
 			
 		//white space or invalid
 		} else if (inst == ' ') {
 			//do nothing
 		} else {
-			System.err.print("invalid character");
+			System.err.println("invalid character");
 			System.exit(1);
 		}
 	}

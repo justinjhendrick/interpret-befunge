@@ -1,0 +1,12 @@
+vi
+  //the above line contains variable names
+  //in the positions where they will be stored
+  //(after the first v, of course)
+
+    >1-:21p*21g v
+
+        v<
+>&::|-1:<|:     <
+
+          //reach this line if i = 0 or i - 1 = 0
+    >    >$. 25*, @
