@@ -24,7 +24,7 @@ public class Interpreter {
 		currentDirection = Dir.EAST;
 		parse(filename); //parse initializes program
 		program.finalize(); //parsing is done. execution begins.
-		programCounter = new PC(0, 0);
+		programCounter = new PC(0, 0, program.getWidth(), program.getHeight());
 		quote = false;
 	}
 	
@@ -52,7 +52,6 @@ public class Interpreter {
 			programCounter.move(currentDirection);
 		}
 	}
-	
 	
 	private void push(int v) {
 		stack.push(v);

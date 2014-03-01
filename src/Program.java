@@ -13,6 +13,14 @@ public class Program {
 		building_instr = new ArrayList<String>();
 	}
 	
+	public int getHeight() {
+		return height;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+	
 	public void addLine (String line) {
 		int len = line.length();
 		if (len > width) {
